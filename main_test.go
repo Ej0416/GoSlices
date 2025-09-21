@@ -7,46 +7,28 @@ import (
 
 func Test(t *testing.T) {
 	type testCase struct {
-		messages         []string
-		expectedMessages [3]string
-		expectedCosts    [3]int
+		messages    []string
+		expected    []float64
+		expectedCap int
 	}
 
 	runCases := []testCase{
 		{
-			[]string{
-				"Hello sir/madam can I interest you in a yacht?",
-				"Please I'll even give you an Amazon gift card?",
-				"You're missing out big time",
-			},
-			[3]string{
-				"Hello sir/madam can I interest you in a yacht?",
-				"Please I'll even give you an Amazon gift card?",
-				"You're missing out big time",
-			},
-			[3]int{46, 92, 119},
+			[]string{"Welcome to the movies!", "Enjoy your popcorn!"},
+			[]float64{0.22, 0.19},
+			2,
 		},
 		{
-			[]string{"It's the spring fling sale!", "Don't miss this event!", "Last chance."},
-			[3]string{"It's the spring fling sale!", "Don't miss this event!", "Last chance."},
-			[3]int{27, 49, 61},
+			[]string{"I don't want to be here anymore", "Can we go home?", "I'm hungry", "I'm bored"},
+			[]float64{0.31, 0.15, 0.1, 0.09},
+			4,
 		},
 	}
 
 	submitCases := append(runCases, []testCase{
-		{
-			[]string{
-				"Put that coffee down!",
-				"Coffee is for closers",
-				"Always be closing",
-			},
-			[3]string{
-				"Put that coffee down!",
-				"Coffee is for closers",
-				"Always be closing",
-			},
-			[3]int{21, 42, 59},
-		},
+		{[]string{}, []float64{}, 0},
+		{[]string{""}, []float64{0}, 1},
+		{[]string{"Hello", "Hi", "Hey"}, []float64{0.05, 0.02, 0.03}, 3},
 	}...)
 
 	testCases := runCases
@@ -59,40 +41,33 @@ func Test(t *testing.T) {
 	failCount := 0
 
 	for _, test := range testCases {
-		actualMessages, actualCosts := getMessageWithRetries(test.messages[0], test.messages[1], test.messages[2])
-		if actualMessages[0] != test.expectedMessages[0] ||
-			actualMessages[1] != test.expectedMessages[1] ||
-			actualMessages[2] != test.expectedMessages[2] ||
-			actualCosts[0] != test.expectedCosts[0] ||
-			actualCosts[1] != test.expectedCosts[1] ||
-			actualCosts[2] != test.expectedCosts[2] {
+		output := getMessageCosts(test.messages)
+		if !slicesEqual(output, test.expected) || cap(output) != test.expectedCap {
 			failCount++
 			t.Errorf(`---------------------------------
 Test Failed:
-Inputs:
 %v
 Expecting:
 %v
-%v
+expected cap: %v
 Actual:
 %v
-%v
+actual cap: %v
 Fail
-`, sliceWithBullets(test.messages), sliceWithBullets(test.expectedMessages[:]), test.expectedCosts, sliceWithBullets(actualMessages[:]), actualCosts)
+`, sliceWithBullets(test.messages), sliceWithBullets(test.expected), test.expectedCap, sliceWithBullets(output), cap(output))
 		} else {
 			passCount++
 			fmt.Printf(`---------------------------------
 Test Passed:
-Inputs:
 %v
 Expecting:
 %v
-%v
+expected cap: %v
 Actual:
 %v
-%v
+actual cap: %v
 Pass
-`, sliceWithBullets(test.messages), sliceWithBullets(test.expectedMessages[:]), test.expectedCosts, sliceWithBullets(actualMessages[:]), actualCosts)
+`, sliceWithBullets(test.messages), sliceWithBullets(test.expected), test.expectedCap, sliceWithBullets(output), cap(output))
 		}
 	}
 
@@ -106,15 +81,33 @@ Pass
 }
 
 func sliceWithBullets[T any](slice []T) string {
+	if slice == nil {
+		return "  <nil>"
+	}
+	if len(slice) == 0 {
+		return "  []"
+	}
 	output := ""
 	for i, item := range slice {
-		form := "  - %v\n"
+		form := "  - %#v\n"
 		if i == (len(slice) - 1) {
-			form = "  - %v"
+			form = "  - %#v"
 		}
 		output += fmt.Sprintf(form, item)
 	}
 	return output
+}
+
+func slicesEqual(a, b []float64) bool {
+	if len(a) != len(b) {
+		return false
+	}
+	for i, v := range a {
+		if v != b[i] {
+			return false
+		}
+	}
+	return true
 }
 
 // withSubmit is set at compile time depending
