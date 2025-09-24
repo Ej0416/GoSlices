@@ -78,23 +78,39 @@ import (
 // }
 
 // ------------------------------------------------------------- range
-func indexOfFirstBadWord(msg []string, badWords []string) int {
-	for i, msgWords := range msg {
+// func indexOfFirstBadWord(msg []string, badWords []string) int {
+// 	for i, msgWords := range msg {
 
-		for _, bw := range badWords {
-			if msgWords == bw {
-				return i
-			}
+// 		for _, bw := range badWords {
+// 			if msgWords == bw {
+// 				return i
+// 			}
+// 		}
+
+// 		// or
+
+// 		// if slices.Contains(badWords, msgWords) {
+// 		// 		return i
+// 		// 	}
+// 	}
+// 	return -1
+// }
+
+func createMatrix(rows, cols int) [][]int {
+	// make the rows
+	matrix := make([][]int, rows)
+
+	for i := range rows {
+		// prepare the lenght of the rows so it wont get out of bounds
+		matrix[i] = make([]int,cols)
+		for j := range cols{
+			matrix[i][j] = i * j
 		}
-
-		// or
-
-		// if slices.Contains(badWords, msgWords) {
-		// 		return i
-		// 	}
 	}
-	return -1
+
+	return matrix
 }
+
 
 func main() {
 	fmt.Println("app start")
