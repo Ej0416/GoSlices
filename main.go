@@ -60,21 +60,40 @@ import (
 // 	return sum
 // }
 
-type cost struct {
-	day   int
-	value float64
-}
+// type cost struct {
+// 	day   int
+// 	value float64
+// }
 
-func getDayCosts(costs []cost, day int) []float64 {
-	dayCost := make([]float64, 0)
-	for i := range len(costs){
-		if costs[i].day == day {
-			dayCost = append(dayCost, costs[i].value)
+// func getDayCosts(costs []cost, day int) []float64 {
+// 	dayCost := make([]float64, 0)
+// 	for i := range len(costs){
+// 		if costs[i].day == day {
+// 			dayCost = append(dayCost, costs[i].value)
+// 		}
+// 		continue
+// 	}
+
+// 	return dayCost
+// }
+
+// ------------------------------------------------------------- range
+func indexOfFirstBadWord(msg []string, badWords []string) int {
+	for i, msgWords := range msg {
+
+		for _, bw := range badWords {
+			if msgWords == bw {
+				return i
+			}
 		}
-		continue
-	}
 
-	return dayCost
+		// or
+
+		// if slices.Contains(badWords, msgWords) {
+		// 		return i
+		// 	}
+	}
+	return -1
 }
 
 func main() {
