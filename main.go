@@ -27,28 +27,56 @@ import (
 // 	}
 // }
 
-// We send a lot of text messages at Textio, and our API is getting slow and unresponsive.
+// ---------------------------------------------- make slices
 
-// If we know the rough size of a slice before we fill it up, we can make our program faster by creating the slice with that size ahead of time so that the Go runtime doesn't need to continuously allocate new underlying arrays of larger and larger sizes. By setting the length, the slice can still be resized later, but it means we can avoid all the expensive resizing since we know what we'll need.
+// func getMessageCosts(messages []string) []float64 {
+// 	messageCost := make([]float64, len(messages))
 
-// Complete the getMessageCosts() function. It takes a slice of messages and returns a slice of message costs.
+// 	for i := range messages {
+// 		cost := float64(len(messages[i])) * .01
+// 		messageCost[i] = cost
+// 	}
 
-// Preallocate a slice for the message costs of the same length as the messages slice.
-// Fill the costs slice with costs for each message. The cost in the cost slice should correspond to the message in the messages slice at the same index. The cost of a message is the length of the message multiplied by 0.01.
+// 	return messageCost
+// }
 
-func getMessageCosts(messages []string) []float64 {
-	messageCost := make([]float64,len(messages))
+// -------------------------------------------------------------- variadic
+// type TestType struct {
+// 	Nums []int
+// 	strs []string
+// }
 
-	for i := range messages{
-		cost := float64(len(messages[i]) ) * .01
-		messageCost[i] = cost
-	}
+// func test(t TestType) {
+// 	fmt.Println(t.Nums, t.strs)
+// }
 
-	return messageCost
+// func sum(nums ...int) int {
+// 	sum := 0
+
+// 	for i := range len(nums) {
+// 		sum += nums[i]
+// 	}
+
+// 	return sum
+// }
+
+type cost struct {
+	day   int
+	value float64
 }
 
+func getDayCosts(costs []cost, day int) []float64 {
+	dayCost := make([]float64, 0)
+	for i := range len(costs){
+		if costs[i].day == day {
+			dayCost = append(dayCost, costs[i].value)
+		}
+		continue
+	}
+
+	return dayCost
+}
 
 func main() {
 	fmt.Println("app start")
-	
 }
