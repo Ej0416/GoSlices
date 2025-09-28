@@ -96,22 +96,73 @@ import (
 // 	return -1
 // }
 
-func createMatrix(rows, cols int) [][]int {
-	// make the rows
-	matrix := make([][]int, rows)
+// func createMatrix(rows, cols int) [][]int {
+// 	// make the rows
+// 	matrix := make([][]int, rows)
 
-	for i := range rows {
-		// prepare the lenght of the rows so it wont get out of bounds
-		matrix[i] = make([]int,cols)
-		for j := range cols{
-			matrix[i][j] = i * j
+// 	for i := range rows {
+// 		// prepare the lenght of the rows so it wont get out of bounds
+// 		matrix[i] = make([]int,cols)
+// 		for j := range cols{
+// 			matrix[i][j] = i * j
+// 		}
+// 	}
+
+// 	return matrix
+// }
+
+type Message interface {
+	Type() string
+}
+
+type TextMessage struct {
+	Sender  string
+	Content string
+}
+
+func (tm TextMessage) Type() string {
+	return "text"
+}
+
+type MediaMessage struct {
+	Sender    string
+	MediaType string
+	Content   string
+}
+
+func (mm MediaMessage) Type() string {
+	return "media"
+}
+
+type LinkMessage struct {
+	Sender  string
+	URL     string
+	Content string
+}
+
+func (lm LinkMessage) Type() string {
+	return "link"
+}
+
+func filterMessages(messages []Message, filterType string) []Message {
+	filteredSlice := make([]Message, 0)
+	for _, m := range messages{
+		if m.Type() == filterType {
+			filteredSlice = append(filteredSlice, m)
 		}
 	}
 
-	return matrix
+	fmt.Println(filteredSlice)
+	return  filteredSlice
 }
 
 
 func main() {
 	fmt.Println("app start")
+	messages := []Message{
+    TextMessage{Sender: "Alice", Content: "Hi"},
+    MediaMessage{Sender: "Bob", MediaType: "image", Content: "photo.jpg"},
+    LinkMessage{Sender: "Carol", URL: "https://golang.org", Content: "check this"},
+}
+	filterMessages(messages, "text")
 }
