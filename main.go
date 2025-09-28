@@ -198,10 +198,9 @@ type sms struct {
 }
 
 func tagMessages(messages []sms, tagger func(sms) []string) []sms {
-	for i, m := range messages {
-		messages[i].tags = tagger(m)
+	for i := range messages {
+		messages[i].tags = tagger(messages[i])
 		fmt.Println(messages[i].id," = ", messages[i].tags)
-
 	}
 	return messages
 }
