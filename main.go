@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"slices"
+	"strings"
+	"unicode"
 )
 
 // func getMessageWithRetries(primary, secondary, tertiary string) ([3]string, [3]int) {
@@ -156,39 +159,89 @@ import (
 // 	return filteredSlice
 // }
 
-func isValidPassword(password string) bool {
-	// evaluate lenght once and early exit
-	if len(password) < 5 || len(password) > 12 {
-		return false
+// func isValidPassword(password string) bool {
+// 	// evaluate lenght once and early exit
+// 	if len(password) < 5 || len(password) > 12 {
+// 		return false
+// 	}
+
+// 	// initiallize flags after passing lenght evaluation
+// 	hasUppercase := false
+// 	hasNumber := false
+
+// 	// iterate over the string check for uppercase and number
+// 	for _, charAt := range password {
+// 		// checking for upper case and updating flag
+// 		if charAt >= 'A' && charAt <= 'Z' {
+// 			hasUppercase = true
+// 		}
+
+// 		// checking for number and updatung flag
+// 		if charAt >= '0' && charAt <= '9' {
+// 			hasNumber = true
+// 		}
+// 	}
+
+// 	// early exit if all flags are true and return true
+// 	if hasUppercase && hasNumber {
+// 		return true
+// 	}
+
+// 	//default return for not valid, i.e one of the flags is false
+// 	return false
+// }
+
+type sms struct {
+	id      string
+	content string
+	tags    []string
+}
+
+func tagMessages(messages []sms, tagger func(sms) []string) []sms {
+	for i, m := range messages {
+		messages[i].tags = tagger(m)
+		fmt.Println(messages[i].id," = ", messages[i].tags)
+
 	}
+	return messages
+}
 
-	// initiallize flags after passing lenght evaluation
-	hasUppercase := false
-	hasNumber := false
+func tagger(msg sms) []string {
+	tags := []string{}
 
-	// iterate over the string check for uppercase and number
-	for _, charAt := range password {
-		// checking for upper case and updating flag
-		if charAt >= 'A' && charAt <= 'Z' {
-			hasUppercase = true
+	normalizeSms := strings.Map(func(r rune) rune{
+		switch r{
+		case ',','!','.','?':
+			return -1
 		}
+		return unicode.ToLower(r)
+	}, msg.content)
 
-		// checking for number and updatung flag
-		if charAt >= '0' && charAt <= '9' {
-			hasNumber = true
-		}
+	splitSms := strings.Fields(normalizeSms)
+
+	if slices.Contains(splitSms, "urgent") {
+		tags = append(tags, "Urgent")
 	}
 
-	// early exit if all flags are true and return true
-	if hasUppercase && hasNumber {
-		return true
+	if slices.Contains(splitSms, "sale") {
+		tags = append(tags, "Promo")
 	}
 
-	//default return for not valid, i.e one of the flags is false
-	return false
+	return tags
 }
 
 func main() {
 	fmt.Println("app start")
-	fmt.Println("is valid: ", isValidPassword("Pass0"))
+	sms := []sms{
+		{id: "001",
+			content: "sale Urgent! please respond! sale!"},
+		{id: "002",
+			content: "Big sale on all items!"},
+	}
+
+	tagMessages(sms, tagger)
+
+	// for _,s :=range sms {
+	// 	fmt.Println(tagger(s))
+	// }
 }
