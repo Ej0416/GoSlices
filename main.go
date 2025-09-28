@@ -111,58 +111,84 @@ import (
 // 	return matrix
 // }
 
-type Message interface {
-	Type() string
-}
+// type Message interface {
+// 	Type() string
+// }
 
-type TextMessage struct {
-	Sender  string
-	Content string
-}
+// type TextMessage struct {
+// 	Sender  string
+// 	Content string
+// }
 
-func (tm TextMessage) Type() string {
-	return "text"
-}
+// func (tm TextMessage) Type() string {
+// 	return "text"
+// }
 
-type MediaMessage struct {
-	Sender    string
-	MediaType string
-	Content   string
-}
+// type MediaMessage struct {
+// 	Sender    string
+// 	MediaType string
+// 	Content   string
+// }
 
-func (mm MediaMessage) Type() string {
-	return "media"
-}
+// func (mm MediaMessage) Type() string {
+// 	return "media"
+// }
 
-type LinkMessage struct {
-	Sender  string
-	URL     string
-	Content string
-}
+// type LinkMessage struct {
+// 	Sender  string
+// 	URL     string
+// 	Content string
+// }
 
-func (lm LinkMessage) Type() string {
-	return "link"
-}
+// func (lm LinkMessage) Type() string {
+// 	return "link"
+// }
 
-func filterMessages(messages []Message, filterType string) []Message {
-	filteredSlice := make([]Message, 0)
-	for _, m := range messages{
-		if m.Type() == filterType {
-			filteredSlice = append(filteredSlice, m)
+// func filterMessages(messages []Message, filterType string) []Message {
+// 	filteredSlice := make([]Message, 0)
+// 	for _, m := range messages {
+// 		if m.Type() == filterType {
+// 			filteredSlice = append(filteredSlice, m)
+// 		}
+// 	}
+
+// 	fmt.Println(filteredSlice)
+// 	return filteredSlice
+// }
+
+func isValidPassword(password string) bool {
+	// evaluate lenght once and early exit
+	if len(password) < 5 || len(password) > 12 {
+		return false
+	}
+
+	// initiallize flags after passing lenght evaluation
+	hasUppercase := false
+	hasNumber := false
+
+	// iterate over the string check for uppercase and number
+	for _, charAt := range password {
+		// checking for upper case and updating flag
+		if charAt >= 'A' && charAt <= 'Z' {
+			hasUppercase = true
+		}
+
+		// checking for number and updatung flag
+		if charAt >= '0' && charAt <= '9' {
+			hasNumber = true
 		}
 	}
 
-	fmt.Println(filteredSlice)
-	return  filteredSlice
-}
+	// early exit if all flags are true and return true
+	if hasUppercase && hasNumber {
+		return true
+	}
 
+	//default return for not valid, i.e one of the flags is false
+	return false
+}
 
 func main() {
 	fmt.Println("app start")
-	messages := []Message{
-    TextMessage{Sender: "Alice", Content: "Hi"},
-    MediaMessage{Sender: "Bob", MediaType: "image", Content: "photo.jpg"},
-    LinkMessage{Sender: "Carol", URL: "https://golang.org", Content: "check this"},
-}
-	filterMessages(messages, "text")
+	fmt.Println("is valid: ", isValidPassword("Pass0"))
 }
